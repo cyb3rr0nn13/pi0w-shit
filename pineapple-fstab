@@ -1,0 +1,21 @@
+# nano /pineapple/modules/Advanced/formatSD/fdisk_options
+# Remove the "M"
+
+config 'global'
+ 	 option	anon_swap '0'
+	 option	anon_mount '0'
+	 option	auto_swap '1'
+	 option	auto_mount '1'
+	 option	delay_root '5'
+	 option	check_fs '0'
+   
+ config 'mount'
+	 option	target '/sd'
+	 option	device '/dev/sdcard/sda1'
+	 option	fstype 'ext4'
+	 option	options 'rw,sync'
+	 option	enabled '1'
+   
+ config 'swap'
+   option device '/dev/sdcard/sda2'
+   option enabled '1'
