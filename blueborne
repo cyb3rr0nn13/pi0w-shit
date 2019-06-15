@@ -1,0 +1,6 @@
+sudo apt-get update;
+sudo apt-get install python2.7 python-pip python-dev git libssl-dev libffi-dev build-essential;
+sudo apt-get install bluetooth libbluetooth-dev
+sudo pip install pybluez pwntools;
+pip install --upgrade pip;
+sudo mkdir /usr/share/blueborne && sudo git clone --recursive https://github.com/mailinneberg/blueborne /usr/share/blueborne;
