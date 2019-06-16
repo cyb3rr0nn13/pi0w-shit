@@ -18,7 +18,7 @@
    createdb --owner=msf msfdb
    exit
   
-  # Gem-Shit
+  # Gems
    cd ~/metasploit
    gem install bundler rake Ascii85 concurrent-ruby i18n minitest thread_safe tzinfo activesupport
    bundle install
