@@ -1,0 +1,17 @@
+# Extracts whatsapp data from google drive
+
+# Installation
+sudo apt-get update && sudo apt-get install -y python3-pip && sudo pip3 install pyportify && cd /usr/share && sudo git clone https://github.com/B16f00t/whapa && cd whapa;
+sudo pip install -r ./doc/requirements.txt && sudo python whapa.py -h
+
+# Config (edit only the values of the file ./cfg/settings.cfg)
+[auth]
+gmail = alias@gmail.com
+passw = yourpassword
+devid = Device ID (optional, if specified get more information)
+
+# Examples
+# Show all messages from DB: sudo python whapa.py -m -tS "12-12-2017 12:00" -tE "13-12-2017 12:00"
+# Show all messages from 12-12-2017 12:00 to 13-12-2017 12:00: sudo python whapa.py -m -w -tI
+# Show all images send by Whatsapp Web:  sudo python whapa.py -m -g 34XXXXXXXXX-1345475288@g.us	
+# Show all messages send by that group: sudo python whapa.py -m -a -r EN
