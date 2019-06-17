@@ -1,3 +1,0 @@
-sudo mkdir /usr/share/lscript;
-sudo git clone https://github.com/arismelachroinos/lscript /usr/share/lscript && sudo chmod +x /usr/share/lscript/install.sh;
-sudo /usr/share/lscript/install.sh
