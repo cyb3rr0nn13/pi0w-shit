@@ -1,0 +1,3 @@
+sudo mon0 up
+airodump-ng mon0
+aireplay-ng --test mon0
