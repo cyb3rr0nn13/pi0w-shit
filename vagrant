@@ -1,0 +1,17 @@
+# Install chocolatey as Admin if it isn't installed yet
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+# Install Git VirtualBox and Vagrant
+choco.exe install vagrant virtualbox
+
+# Refresh environment variables
+refreshenv
+
+# Install Vagrant Plugins
+vagrant plugin install vagrant-winnfsd
+vagrant plugin install vagrant-vbguest
+
+# Reboot Windows or close shell and reopen
+git clone https://github.com/neikei/install-vagrant-on-windows.git
+cd install-vagrant-on-windows && vagrant up
+vagrant ssh
