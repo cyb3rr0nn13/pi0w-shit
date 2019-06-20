@@ -10,8 +10,11 @@ gmail = alias@gmail.com
 passw = yourpassword
 devid = Device ID (optional, if specified get more information)
 
-# Examples
-# Show all messages from DB: sudo python whapa.py -m -tS "12-12-2017 12:00" -tE "13-12-2017 12:00"
-# Show all messages from 12-12-2017 12:00 to 13-12-2017 12:00: sudo python whapa.py -m -w -tI
-# Show all images send by Whatsapp Web:  sudo python whapa.py -m -g 34XXXXXXXXX-1345475288@g.us	
-# Show all messages send by that group: sudo python whapa.py -m -a -r EN
+# all messages from DB: 
+sudo python whapa.py -m -tS "12-12-2017 12:00" -tE "13-12-2017 12:00"
+# all messages from 12-12-2017 12:00 to 13-12-2017 12:00: 
+sudo python whapa.py -m -w -tI
+# all images send by Whatsapp Web:  
+sudo python whapa.py -m -g 34XXXXXXXXX-1345475288@g.us	
+# all messages send by that group: 
+sudo python whapa.py -m -a -r EN
