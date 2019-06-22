@@ -11,8 +11,10 @@ sudo git clone https://github.com/PowerScript/KatanaFramework.git /usr/share/kat
 sudo git clone https://github.com/AresS31/wirespy /usr/share/wirespy && sudo chmod +x /usr/share/wirespy/* && sudo /usr/share/wirespy/wirespy.sh
 
 # PS1Encode
-sudo git clone https://github.com/CroweCybersecurity/ps1encode /usr/share/ps1encode
+sudo git clone https://github.com/CroweCybersecurity/ps1encode /usr/share/ps1encode && sudo ruby /usr/share/ps1encode/ps1encode.rb -h
 
 # AutoSploit
-sudo git clone https://github.com/NullArray/autosploit /usr/share/ && cd /usr/share/autosploit && sudo  chmod +x -R install.sh && sudo ./install.sh
+sudo git clone https://github.com/NullArray/autosploit /usr/share/autosploit && cd /usr/share/autosploit && sudo  chmod +x -R install.sh && sudo ./install.sh
 
+# Empire
+sudo git clone https://github.com/empireproject/empire /usr/share/empire && cd usr/share/empire/setup && sudo pip3 install -r requirements.txt && sudo ./install.sh && ./cert.sh && sudo reset.sh
