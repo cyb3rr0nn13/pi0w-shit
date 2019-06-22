@@ -18,3 +18,6 @@ sudo git clone https://github.com/NullArray/autosploit /usr/share/autosploit && 
 
 # Empire
 sudo git clone https://github.com/empireproject/empire /usr/share/empire && sudo pip2 install -r /usr/share/empire/setup/requirements.txt && sudo /usr/share/empire/setup/install.sh && sudo python /usr/share/empire/setup/setup_databa* && sudo /usr/share/empire/setup/cert.sh && sudo /usr/share/empire/setup/reset.sh
+
+# mdk4
+sudo apt-get install pkg-config libnl-3-dev libnl-genl-3-dev libpcap-dev && sudo git clone https://github.com/aircrack-ng/mdk4 /usr/share/mdk4 && cd /usr/share/mdk4 && sudo make && sudo make install
