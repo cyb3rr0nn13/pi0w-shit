@@ -1,0 +1,272 @@
+apt-get install aptitude curl cmake build-essential mailutils python-dev python-pip libusb-1.0-0-dev python-numpy htop ftp locate screen kismet pure-ftpd tightvncserver mysql-server darkstat ntopng mana-toolkit beef-xss resolvconf mitmf dns2proxy dnsmasq hostapd
+# apt-get install kali-linux-full
+# apt-get install metasploit-framework
+# systemctl disable mysql
+updatedb
+sudo apt-get install openvas
+sudo openvas-setup
+sudo mkdir -p /etc/systemd/system/greenbone-security-assistant.service.d/
+
+sudo nano /etc/systemd/system/greenbone-security-assistant.service.d/local.conf
+   [Service]
+   ExecStart=
+   ExecStart=/usr/sbin/gsad --foreground --listen=0.0.0.0 --port=9392 --mlisten=127.0.0.1 --mport=9390
+   
+openvasmd --user=admin --new-password=PASSWORD
+history -c
+
+sudo nano /etc/kismet/kismet.conf
+   ncsource=wlan1
+logprefix=/home/ftp/pi/kismet
+This makes wlan1 the default capture device and all log files are being written to the ftp directory for easy remote retrieval (skip this if you are not installing the ftp server below).
+Use a kismet compatible USB dongle like the TP-Link TL-WN722N.
+To make thinks more predictable, you might want to assign wlan1 to your dongle permanently, e.g. via adding the following to “/etc/udev/rules.d/70-persistent-net.rules”:
+
+# USB device 0x:0x (ath9k_htc)
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="wlan*", NAME="wlan1"
+Speed up booting without eth0 by adding to “/etc/dhcp/dhclient.conf”:
+timeout 10;
+STOP HERE TO STICK WITH VANILLA KALI.
+KALI-PI CUSTOM LAUNCHER:
+Boot into text mode
+Disable display manager with the Re4son Pi-TFT Setup tool :
+cd /usr/local/src/re4son-kernel_4*
+sudo ./re4son-pi-tft-setup -b cli
+To change it back, just run:
+cd /usr/local/src/re4son-kernel_4*
+sudo ./re4son-pi-tft-setup -b gui
+Create a low privilege user
+Create standard user to drive the launcher, etc.:
+groupadd ftp
+adduser pi
+usermod -a -G sudo,ftp,kismet pi
+Adjust the user profile by adding to “/home/pi/.profile”:
+export FRAMEBUFFER=/dev/fb1
+remove sudo password from some standard commands by adding to sudoers via visudo (run “visudo” and insert the following line after “%sudo”):
+%pi	ALL=(ALL:ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown, /home/pi/Kali-Pi/menu
+If you have never worked with the legendary vi editor then you may be stuck here 😉
+Don’t fear, this is what you have to do:
+
+Navigate to the spot you would like to edit.
+Press “<ESC>” then “i” to switch to “insert mode”
+paste the above line
+Press “<ESC>” then “x” then “<ENTER>” to save the file and exit.
+If you’ve made a mistake, just press “<ESC>” then “q!” then “<ENTER>” to exit without saving, then try it again.
+
+Don’t forget to “man vi” and to get one of these if you want to become a hardcore unix hacker.
+
+FTP Server
+Setup pure-ftpd :
+mkdir -p /home/ftp/pi/kismet
+chgrp ftp /home/ftp
+chown pi:pi -R /home/ftp/pi
+chown pi:kismet -R /home/ftp/pi/kismet
+pure-pw useradd pi -u pi -d /home/ftp/pi
+pure-pw mkdb
+cd /etc/pure-ftpd/auth
+ln -s ../conf/PureDB 60pdb
+If you ever want to change the ftp password, just type:
+pure-pw passwd pi
+pure-pw mkdb
+Configure VNC Server:
+A bug in xfce4 might prevent a vnc session if an active desktop session already exists, and log the following error in ~/.xsession-errors:
+xfce4-session: Another session manager is already running
+To fix that, type:
+wget -O ~/.vnc/xstartup https://github.com/Re4son/vncservice/raw/master/xstartup
+mkdir /home/pi/.vnc/
+cp ~/.vnc/xstartup /home/pi/.vnc/
+chown pi:pi /home/pi/.vnc/
+chown pi:pi /home/pi/.vnc/xstartup
+Set a vnc server password:
+vncpasswd
+sudo pi vncpasswd
+Optional: to install vncserver as a service type:
+wget -O /lib/systemd/system/vncserver@.service https://github.com/Re4son/vncservice/raw/master/vncserver@.service
+To enable and start the service, type:
+
+systemctl enable vncserver@1 && systemctl start vncserver@1
+Install SDR-Scanner:
+Login as user Pi and install the touch friendly SDR-Scanner:
+cd ~
+git clone git://git.osmocom.org/rtl-sdr.git
+cd rtl-sdr
+mkdir build
+cd build
+cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON
+make
+sudo make install
+sudo ldconfig
+sudo pip install pyrtlsdr
+cd ~
+git clone https://github.com/adafruit/FreqShow.git
+cd FreqShow
+To run the SDR-Scanner just type:
+python /home/pi/FreqShow/freqshow.py
+Kali-Pi Launcher:
+Pygame is broken in Jessie because of libsdl1.2-15-10, so we remove it and install the one from from Wheezy.
+Comment everything out in your /etc/apt/sources.list and temporarily add:
+deb http://archive.raspbian.org/raspbian wheezy main contrib non-free
+Run the following commands:
+gpg --keyserver keys.gnupg.net --recv-key 9165938D90FDDD2E
+gpg -a --export 9165938D90FDDD2E | sudo apt-key add -
+sudo apt-get update
+Remove the offending packages and replace them with the ones from wheezy:
+sudo apt-get remove libsdl1.2debian python-pygame
+sudo apt-get install libsdl-image1.2 libsdl-mixer1.2 libsdl-ttf2.0-0 libsdl1.2debian libsmpeg0 python-pygame
+sudo apt-mark hold libsdl1.2debian
+Restore /etc/apt/sources.list to it’s original state and re-run:
+sudo apt-get update
+Install Kali-Pi Launcher:
+sudo apt-get install fbi
+sudo pip install pbkdf2 RPi.GPIO
+cd ~
+git clone https://github.com/re4son/Kali-Pi
+Adjust the menu launch script to fit your screen, enable PIN and screensaver if desired
+cd ~/Kali-Pi
+nano menu
+Allow “Anybody” to start the X server:
+sudo dpkg-reconfigure xserver-xorg-legacy
+Start Kali-Pi launcher after login by adding at the end of ~/.profile:
+## Sticky-Finger's Kali-Pi
+if [ ! -n "$SSH_CONNECTION" ]; then
+    export FRAMEBUFFER=/dev/fb1
+    /usr/bin/clear &
+    sudo /home/pi/Kali-Pi/menu
+fi
+Reboot.
+Kali-Pi launcher will open automatically after you log in.
+
+Start X as root (if desired):
+Out of the box, X is started as user root.
+
+You can change that by editing /home/pi/Kali-Pi/Menus/menu-1.py and replacing the lines:
+
+run_cmd("/usr/bin/sudo FRAMEBUFFER=/dev/fb1 startx")
+run_cmd("/usr/bin/sudo FRAMEBUFFER=/dev/fb0 startx")
+With
+
+run_cmd("/usr/bin/sudo -u pi FRAMEBUFFER=/dev/fb1 startx")
+run_cmd("/usr/bin/sudo -u pi FRAMEBUFFER=/dev/fb0 startx")
+Enable Auto Login (if desired):
+Enable autologon with the Re4son Pi-TFT Setup tool :
+cd /usr/local/src/re4son-kernel_4*
+sudo ./re4son-pi-tft-setup -a pi
+To change it back, just run:
+cd /usr/local/src/re4son-kernel_4*
+sudo ./re4son-pi-tft-setup -a disable
+ 
+
+Reboot and enjoy.
+
+Optionally: Install screenshot tool
+Login as user pi, go to terminal and install zlib:
+cd ~
+wget http://zlib.net/zlib-1.2.11.tar.gz
+tar -xzf zlib-1.2.11.tar.gz
+cd zlib-1.2.11
+./configure
+make test
+sudo make install
+Install libpng:
+cd ~
+wget https://whitedome.com.au/download/libpng-1.6.18.tar.xz
+tar -xf libpng-1.6.18.tar.xz
+cd libpng-1.6.18
+./configure
+make check
+sudo make install
+sudo ldconfig
+Install fbgrab:
+cd /opt
+sudo wget http://fbgrab.monells.se/fbgrab-1.3.tar.gz
+sudo tar -zxvf fbgrab*gz
+sudo mv fbgrab-1.3 fbgrab
+cd fbgrab
+sudo make
+sudo ln -s /opt/fbgrab/fbgrab /usr/bin/fbgrab
+To take a screenshot and save the picture in the ftp directory, simply type (as root):
+fbgrab -d /dev/fb1 /home/ftp/pi/screenshot.png
+Tips:
+Don’t use Sandisk Extreme Pro micro SD cards -they don’t work well with kali
+I use Sandisk Extreme 32GB and Sandisk Extreme 32GB Plus and my Kali-Pi’s are lightning fast
+To enable ethernet gadget mode with bonjour support without having to logon to configure it at all, install the avahiswitch daemon and follow these steps:
+https://github.com/Re4son/avahiswitch
+If you use the PiTFT screen with Vanilla Kali, you can output the GUI via HDMI by entering:
+mv /etc/X11/xorg.conf.d/99-fbdev.conf ~
+Reboot and you’ll have X on your big screen
+To switch back, just copy the file across again:
+
+cp ~/99-fbdev.conf /etc/X11/xorg.conf.d/
+Swap – Swap space on flash memory is a religious topic.
+I don’t want to get into that discussion. I use swap because I’ve got plenty of sd cards to burn but not enough memory in my Pi ;-)This is how you can enable it:
+sudo dd if=/dev/zero of=/swapfile.img bs=1M count=1024
+sudo mkswap /swapfile.img
+chmod 0600 /swapfile.img
+sudo swapon /swapfile.img
+add this at the end of /etc/fstab
+
+/swapfile.img none swap sw 0 0
+archive.raspbian.org is not very reliable. Try this mirror instead when downgrading packages:
+deb http://mirror.aarnet.edu.au/pub/raspbian/raspbian/ wheezy main contrib non-free
+Persistent interfaces (was fixed in kali the last time I looked) – To avoid having persistent interface names and revert back to the classic interface naming convention (wlan0, eth0, etc.), simply add to the 1st command line in the file /boot/cmdline.txt the following keywords:
+net.ifnames=0 biosdevname=0
+Don’t forget to mount /boot first via:
+
+sudo mount /dev/mmcblk0p1 /boot
+OpenVAS interface choice
+Don’t run an OpenVAS scan via the internal WiFi interface. I would always run my scans via eth0.
+If you have both interfaces connected, specify “Network Source Interface: eth0” in the “task” settings.
+Raspberry Pi 3 WiFi drop outs
+Turn off power saving for the internal wifi card.
+Check the status via:
+sudo iwconfig
+to turn off power saving permanently, add the following lines to “/etc/rc.local”
+
+## Fix WiFi drop out issues
+iwconfig wlan0 power off
+reboot and confirm via “sudo iwconfig” that it worked.
+
+The Kali menu items are missing because of a .png extension bug in the desktop configuration. We’ll fix that by removing that extension in all files via:
+cd /usr/share/desktop-directories/
+sed -i 's/trans.png/trans/g' *.directory
+The default console font looks too chunky on a small screen. I suggest running
+sudo dpkg-reconfigure console-setup
+And select UTF-8 -> Guess optimal character set -> Terminus -> 6×12 (framebuffer only)
+
+To enable the on-screen keyboard in the greeter/login screen, add to /etc/lightdm/lightdm-gtk-greeter.conf
+show-indicators=~language;~a11y;~session;~power
+keyboard=florence --focus
+This will add an “On Screen Keyboard” entry to the indicator menu:
+
+onscreen
+
+The repository ‘http://http.kali.org/kali kali-rolling Release’ does not have a Release file.
+When getting this error during an “apt-get update”, try another mirror from this list:
+http://http.kali.org/README.mirrorlist
+The following entry in “/etc/apt/sources.list” usually works for me:
+deb  http://kali.mirror.garr.it/mirrors/kali kali-rolling main non-free contrib
+deb-src http://kali.mirror.garr.it/mirrors/kali kali-rolling main non-free contrib
+Expanding partition to fill SDCard
+The main partition can be extended to use larger cards in either a different linux system using GParted or in the Raspberry Pi itself whilst the partition is mounted. To do the later you can use fdisk:
+sudo fdisk /dev/mmcblk0
+Command (m for help): p
+
+Device Boot Start End Sectors Size Id Type
+/dev/mmcblk0p1 1 125000 125000 61M c W95 FAT32 (LBA)
+/dev/mmcblk0p2 125001 15523839 15398839 7.4G 83 Linux
+This will give you the start of the old partition (e.g. “mmcblk0p2 125001”)
+
+Command (m for help): d
+Partition number (1,2, default 2): 2
+Command (m for help): n
+Select (default p): p
+Partition number (2-4, default 2): 2
+First sector (125001-31116287, default 126976): 125001 
+Last sector, +sectors or +size{K,M,G,T,P} (125001-31116287, default 31116287):
+Do you want to remove the signature? [Y]es/[N]o: N
+Command (m for help): w
+Reboot and use resize2fs to extend the filesystem
+
+sudo resize2fs /dev/mmcblk0p2
+Done.
+
