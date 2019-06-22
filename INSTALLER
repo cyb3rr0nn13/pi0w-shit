@@ -17,4 +17,4 @@ sudo git clone https://github.com/CroweCybersecurity/ps1encode /usr/share/ps1enc
 sudo git clone https://github.com/NullArray/autosploit /usr/share/autosploit && cd /usr/share/autosploit && sudo  chmod +x -R install.sh && sudo ./install.sh
 
 # Empire
-sudo git clone https://github.com/empireproject/empire /usr/share/empire && cd usr/share/empire/setup && sudo pip3 install -r requirements.txt && sudo ./install.sh && ./cert.sh && sudo reset.sh
+sudo git clone https://github.com/empireproject/empire /usr/share/empire && sudo pip3 install -r /usr/share/empire/setup/requirements.txt && sudo /usr/share/empire/setup/install.sh && sudo /usr/share/empire/setup/cert.sh && sudo /usr/share/empire/setup/reset.sh
