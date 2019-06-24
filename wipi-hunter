@@ -1,5 +1,5 @@
 mkdir ~/wipihunter && cd wipihunter;
-git clone --recursive https://github.com/WiPi-Hunter/piceception;
+git clone --recursive https://github.com/WiPi-Hunter/pideception;
 git clone --recursive https://github.com/WiPi-Hunter/pidense;
 git clone --recursive https://github.com/WiPi-Hunter/pisavar;
 git clone --recursive https://github.com/WiPi-Hunter/pikarma;
