@@ -1,5 +1,5 @@
-mkdir ~/wipihunter && cd wipihunter && wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/wipi-hunter;
-chmod +x -R wipi-hunter && ./wipi-hunter
+sudo mkdir /usr/share/wipihunter && cd wipihunter && sudo wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/wipi-hunter /usr/share/wipihunter;
+sudo chmod +x -R /usr/share/wipihunter/wipi-hunter && sudo /usr/share/wipihunter/wipi-hunter
 
 # git clone --recursive https://github.com/WiPi-Hunter/pideception;
 # git clone --recursive https://github.com/WiPi-Hunter/pidense;
