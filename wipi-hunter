@@ -1,0 +1,9 @@
+mkdir ~/wipihunter && cd wipihunter;
+git clone --recursive https://github.com/WiPi-Hunter/piceception;
+git clone --recursive https://github.com/WiPi-Hunter/pidense;
+git clone --recursive https://github.com/WiPi-Hunter/pisavar;
+git clone --recursive https://github.com/WiPi-Hunter/pikarma;
+git clone --recursive https://github.com/WiPi-Hunter/piopen;
+git clone --recursive https://github.com/WiPi-Hunter/piuser;
+git clone --recursive https://github.com/WiPi-Hunter/pifinger;
+git clone --recursive https://github.com/WiPi-Hunter/pinokyo
