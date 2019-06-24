@@ -1,9 +1,11 @@
-mkdir ~/wipihunter && cd wipihunter;
-git clone --recursive https://github.com/WiPi-Hunter/pideception;
-git clone --recursive https://github.com/WiPi-Hunter/pidense;
-git clone --recursive https://github.com/WiPi-Hunter/pisavar;
-git clone --recursive https://github.com/WiPi-Hunter/pikarma;
-git clone --recursive https://github.com/WiPi-Hunter/piopen;
-git clone --recursive https://github.com/WiPi-Hunter/piuser;
-git clone --recursive https://github.com/WiPi-Hunter/pifinger;
-git clone --recursive https://github.com/WiPi-Hunter/pinokyo
+mkdir ~/wipihunter && cd wipihunter && wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/wipi-hunter;
+chmod +x -R wipi-hunter && ./wipi-hunter
+
+# git clone --recursive https://github.com/WiPi-Hunter/pideception;
+# git clone --recursive https://github.com/WiPi-Hunter/pidense;
+# git clone --recursive https://github.com/WiPi-Hunter/pisavar;
+# git clone --recursive https://github.com/WiPi-Hunter/pikarma;
+# git clone --recursive https://github.com/WiPi-Hunter/piopen;
+# git clone --recursive https://github.com/WiPi-Hunter/piuser;
+# git clone --recursive https://github.com/WiPi-Hunter/pifinger;
+# git clone --recursive https://github.com/WiPi-Hunter/pinokyo
