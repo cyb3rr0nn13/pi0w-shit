@@ -23,5 +23,5 @@ sudo git clone https://github.com/empireproject/empire /usr/share/empire && sudo
 sudo apt-get install pkg-config libnl-3-dev libnl-genl-3-dev libpcap-dev && sudo git clone https://github.com/aircrack-ng/mdk4 /usr/share/mdk4 && cd /usr/share/mdk4 && sudo make && sudo make install
 
 # re4son Kernel
-cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh
+cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh && sudo rm -rf /usr/local/src/*.tar.xz
 # Bluetooth: # Remove: cd /usr/local/src/re4son-kernel_4* && ./install.sh -r # Re-install: ./install.sh -b
