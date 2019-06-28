@@ -28,3 +28,7 @@ cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-ke
 
 # KaliPi-Config
 sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.com/Re4son/RPi-Tweaks/master/kalipi-config/kalipi-config /usr/sbin && sudo chmod +x -R /usr/sbin/kalipi-config && sudo kalipi-config
+
+# hcx*
+sudo git clone --recursive https://github.com/ZerBea/hcxdumptool /usr/share/hcxdumptool && cd /usr/share/hcxdumptool && sudo make && sudo make install && sudo git clone --recursive https://github.com/ZerBea/hcxtools /usr/share/hcxtools && cd /usr/share/hcxtools && sudo make && sudo make install
+
