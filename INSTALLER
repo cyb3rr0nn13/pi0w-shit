@@ -1,5 +1,5 @@
 # LScript
-sudo git clone https://github.com/arismelachroinos/lscript.git /usr/share/lscript/ && sudo chmod +x /usr/share/lscript/* && sudo bash /usr/share/lscript/install.sh
+git clone https://github.com/arismelachroinos/lscript.git ~/.apps/lscript/ && chmod +x ~/.apps/lscript/* && bash ~/.apps/lscript/install.sh && ~/.apps/l
 
 # Koadic
 sudo git clone https://github.com/zerosum0x0/koadic.git /usr/share/koadic && sudo pip3 install -r /usr/share/koadic/requirements.txt && sudo /usr/share/koadic/koadic
