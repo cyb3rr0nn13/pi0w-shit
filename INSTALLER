@@ -25,3 +25,6 @@ sudo apt-get install pkg-config libnl-3-dev libnl-genl-3-dev libpcap-dev && sudo
 # re4son Kernel
 cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh && sudo rm -rf /usr/local/src/*.tar.xz
 # Bluetooth: # Remove: cd /usr/local/src/re4son-kernel_4* && ./install.sh -r # Re-install: ./install.sh -b
+
+# KaliPi-Config
+sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.com/Re4son/RPi-Tweaks/master/kalipi-config/kalipi-config /usr/sbin && sudo chmod +x -R /usr/sbin/kalipi-config && sudo kalipi-config
