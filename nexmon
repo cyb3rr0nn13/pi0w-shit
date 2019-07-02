@@ -13,18 +13,17 @@ make
 make install
 ln -s /usr/local/lib/libisl.so /usr/lib/arm-linux-gnueabihf/libisl.so.10
 
-# Setup the build environment:
-cd /usr/local/src/nexmon/ && source setup_env.sh
+# Setup
+cd /usr/local/src/nexmon/ 
+source setup_env.sh
 make
-
-cd patches/bcm43430a1/7_45_41_46/nexmon/ && make
+cd patches/bcm43430a1/7_45_41_46/nexmon/
+make
 make backup-firmware
 mkdir /lib/modules/Re4son+/build
-
-# Install the patched firmware on your RPI0W:
 make install-firmware
 
-# Install nexutil: 
+# nexutil: 
 cd /usr/local/src/nexmon/utilities/nexutil/
 make
 make install
