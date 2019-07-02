@@ -1,84 +1,86 @@
-sudo apt-get update && sudo apt-get upgrade
+sudo apt-get update 
+sudo apt-get upgrade
 
 # Install the kernel headers to build the driver and some dependencies:
-sudo apt install git libgmp3-dev gawk qpdf bison flex make #raspberrypi-kernel-headers
-sudo git clone https://github.com/seemoo-lab/nexmon.git /usr/local/src && cd /usr/local/src/nexmon
+sudo apt install git libgmp3-dev gawk qpdf bison flex make automake autocong raspberrypi-kernel-headers
+sudo git clone https://github.com/seemoo-lab/nexmon.git /usr/local/src
+cd /usr/local/src/nexmon && sudo -s
 
 # Check if /usr/lib/arm-linux-gnueabihf/libisl.so.10 exists,
-sudo ls /usr/lib/arm-linux-gnueabihf/libisl.so.*
+ls /usr/lib/arm-linux-gnueabihf/libisl.so.*
 
 # if there is no libisl.so.10 in the list, compile it from source:
 cd buildtools/isl-0.10
-sudo ./configure
-sudo make
-sudo make install
-sudo ln -s /usr/local/lib/libisl.so /usr/lib/arm-linux-gnueabihf/libisl.so.10
+./configure
+make
+make install
+ln -s /usr/local/lib/libisl.so /usr/lib/arm-linux-gnueabihf/libisl.so.10
 
 # Then you can setup the build environment for compiling firmware patches
 
 # Setup the build environment:
-cd /usr/local/src/nexmon/
-sudo source setup_env.sh
+cd /usr/local/src/nexmon/ && source setup_env.sh
 
 # Compile some build tools and extract the ucode and flashpatches from the original firmware files:
-sudo make
+make
 
-# Go to the patches folder for the bcm43430a1 chipset:
-cd patches/bcm43430a1/7_45_41_46/nexmon/
-
-# Compile a patched firmware:
-sudo make
+# Go to the patches folder for the bcm43430a1 chipset / Compile a patched firmware:
+cd patches/bcm43430a1/7_45_41_46/nexmon/ && make
 
 # Generate a backup of your original firmware file stored as /lib/firmware/brcm/brcmfmac43430-sdio.bin.orig
-sudo make backup-firmware
-sudo mkdir /lib/modules/Re4son+/build
+make backup-firmware
+mkdir /lib/modules/Re4son+/build
 
 # Install the patched firmware on your RPI0W:
-sudo make install-firmware
+make install-firmware
 
-# Install nexutil: from the root directory of our repository switch to the nexutil folder:
+# Install nexutil: 
+# from the root directory of our repository switch to the nexutil folder:
 cd utilities/nexutil/
 
 # Compile and install nexutil:
-sudo make && sudo make install
+make && make install
 
-# Optional: remove wpa_supplicant for better control over the WiFi interface:
-sudo apt-get remove wpasupplicant
+# Optional: 
+# remove wpa_supplicant for better control over the WiFi interface:
+apt-get remove wpasupplicant
 
-# Note: To connect to regular access points you have to execute
-sudo nexutil -m0 first
+# Note: 
+# To connect to regular access points you have to execute
+nexutil -m0 
+# first
 
 # Using the Monitor Mode patch (Thanks to the prior work of Mame82, you can setup a new monitor mode interface by executing)
-sudo iw phy phy1 interface add mon0 type monitor
+iw phy phy1 interface add mon0 type monitor
 
 # phy1 is chosen according to the wiphy index after executing
-sudo iw dev wlan0 info
+iw dev wlan0 info
 
 # To activate monitor mode in the firmware, simply set the interface up:
-sudo ifconfig mon0 up
+ifconfig mon0 up
 
 # At this point, monitor mode is active. 
 # There is no need to call airmon-ng.
 # The interface already set the Radiotap header, therefore, tools like tcpdump or airodump-ng can be used out of the box:
-sudo tcpdump -i mon0
+tcpdump -i mon0
 
 # Optional: 
 # To make the RPI3 load the modified driver after reboot: 
 # Find the path of the default driver at reboot:
-sudo modinfo brcmfmac 
+modinfo brcmfmac 
 #the first line should be the full path
 
 # Backup the original driver:
-sudo mv “<PATH TO THE DRIVER>/brcmfmac.ko” “<PATH TO THE DRIVER>/brcmfmac.ko.orig”
+mv “<PATH TO THE DRIVER>/brcmfmac.ko” “<PATH TO THE DRIVER>/brcmfmac.ko.orig”
 
 # Copy the modified driver:
-sudo cp /usr/local/src/nexmon/patches/bcm43430a1/7_45_41_46/nexmon/brcmfmac_kernel49/brcmfmac.ko “<PATH TO THE DRIVER>/”
+cp /usr/local/src/nexmon/patches/bcm43430a1/7_45_41_46/nexmon/brcmfmac_kernel49/brcmfmac.ko “<PATH TO THE DRIVER>/”
 
 # Probe all modules and generate new dependency:
-sudo depmod -a
+depmod -a
 
 # The new driver should be loaded by default after reboot: 
-sudo reboot 
+reboot 
 
 # It is possible to connect to an access point or run your own access point in parallel 
 # to the monitor mode interface on the wlan0 interface.
@@ -90,11 +92,11 @@ sudo reboot
 # To install, reboot after installing a new kernel and run:
 
 cd /usr/local/src/re4son-kernel_4*
-sudo ./install.sh -x
+./install.sh -x
 
 # If you have any problems with the drivers and wish to rollback to to original ones, just run:
 cd /usr/local/src/re4son-kernel_4*
-sudo ./install.sh -o
+./install.sh -o
 
 # Head over to the nexmon project for details: 
 # https://github.com/seemoo-lab/nexmon
