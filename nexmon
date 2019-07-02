@@ -1,6 +1,6 @@
 sudo apt-get update 
 sudo apt-get upgrade
-sudo apt install git libgmp3-dev gawk qpdf bison flex make automake autocong raspberrypi-kernel-headers
+sudo apt install git libgmp3-dev gawk qpdf bison flex make automake autoconf raspberrypi-kernel-headers
 sudo git clone https://github.com/seemoo-lab/nexmon.git /usr/local/src
 cd /usr/local/src/nexmon && sudo -s
 
