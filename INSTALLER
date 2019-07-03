@@ -32,3 +32,8 @@ sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.co
 # hcx*
 sudo git clone --recursive https://github.com/ZerBea/hcxdumptool /usr/share/hcxdumptool && cd /usr/share/hcxdumptool && sudo make && sudo make install && sudo git clone --recursive https://github.com/ZerBea/hcxtools /usr/share/hcxtools && cd /usr/share/hcxtools && sudo make && sudo make install
 
+# Hostapd-Mana
+wget -qO- https://raw.githubusercontent.com/adde88/hostapd-mana/master/INSTALL.sh | bash -s -- -v -v
+
+# PMKID Attack
+opkg update && opkg --dest sd install git git-http && cd /sd/modules && git clone https://github.com/n3d-b0y/PMKIDAttack.git PMKIDAttack && chmod +x -R /sd/modules/PMKIDAttack/scripts
