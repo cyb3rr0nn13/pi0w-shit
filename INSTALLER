@@ -40,3 +40,6 @@ opkg update && opkg --dest sd install git git-http && cd /sd/modules && git clon
 
 # Pass the Hash
 sudo apt-get install passing-the-hash unicornscan nfspy firmware-mod-kit wmis enum4linux polenum unicornscan winexe nipper-ng jsql oclgausscrack ghost-phisher uniscan lbd automater arachni bully inguma sslsplit dumpzilla owasp-mantra-ff recon-ng ridenum regripper jd-gui
+
+# Ngrok
+sudo mkdir /usr/share/ngrok && sudo wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip /usr/share/ngrok && sudo chmod +x /usr/share/ngrok/* && sudo unzip /usr/share/ngrok/ngrok-stable-linux-arm.zip && sudo rm -rf /usr/share/ngrok/ngrok-stable-linux-arm.zip && sudo chmod +x /usr/share/ngrok/ngrok && sudo cp /usr/share/ngrok/ngrok /usr/sbin && cd /usr/share/ngrok/
