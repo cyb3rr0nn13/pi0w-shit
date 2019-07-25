@@ -47,3 +47,6 @@ sudo mkdir /usr/share/ngrok && sudo wget https://bin.equinox.io/c/4VmDzA7iaHb/ng
 # SocialFish
 sudo git clone https://github.com/UndeadSec/SocialFish /usr/share/socialfish && sudo apt-get install python3 python3-pip python3-dev -y &&  sudo python3 -m pip install -r /usr/share/socialfish/requirements.txt && sudo nano /usr/share/socialfish/core/config.py
 # APP_SECRET_KEY = '<CHANGE ME SF>'
+
+# jDownloader2
+cd /usr/share && sudo mkdir jdownloader && cd jdownloader && sudo wget http://installer.jdownloader.org/JDownloader.jar && sudo java -jar JDownloader.jar
