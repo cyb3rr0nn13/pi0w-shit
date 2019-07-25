@@ -50,3 +50,6 @@ sudo git clone https://github.com/UndeadSec/SocialFish /usr/share/socialfish && 
 
 # jDownloader2
 cd /usr/share && sudo mkdir jdownloader && cd jdownloader && sudo wget http://installer.jdownloader.org/JDownloader.jar && sudo java -jar JDownloader.jar
+
+# ALOA
+wget https://github.com/mame82/P4wnP1_aloa/releases/download/v0.1.0-alpha2/kali-linux-v0.1.0-alpha2-rpi0w-nexmon-p4wnp1-aloa.img.xz
