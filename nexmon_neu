@@ -1,0 +1,537 @@
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install build-essential bc git dkms aircrack-ng tcpdump vim raspberrypi-kernel-headers -y
+sudo reboot now** neuzustarten! In den folgenden Schritten werden wir Treiber kompilieren und dafür ist es gut wenn der aktualisierte Kernel läuft (und damit zum Quelltext passt den wir dafür ebenfalls heruntergeladen haben).
+</WRAP>
+
+
+==== VIM und die Mausunterstützung ====
+sudo vi /etc/vim/vimrc.local
+set mouse=
+set ttymouse=
+
+(mit :wq abspeichern und beenden)
+
+==== Quellcode für Treiber herunterladen und kompilieren ====
+git clone https://github.com/aircrack-ng/rtl8812au
+cd rtl8812au/
+vi Makefile 
+
+CONFIG_PLATFORM_I386_PC suchen und auf "n" setzen
+CONFIG_PLATFORM_ARM_RPI suchen und auf "y" setzen
+
+(vim mit :wq beenden und die obige Änderung speichern!)
+
+==== rtl8812au Treiber mit DKMS kompilieren ====
+
+Den Treiber über diese DKMS-Funktion zu erstellen hat den Vorteil dass beim nächsten Kernel-Update der Treiber einfach neu gebaut werden kann ohne dass man dies manuell tun müsste.
+sudo ./dkms-install.sh 
+
+==== Optional: Fehlerbehebung ====
+Wer diese Fehlermeldung sieht, hat meinen Hinweis mit dem Reboot nicht beachtet. Bitte den Raspberry Pi neustarten und es dann erneut versuchen.
+sudo ./dkms-install.sh 
+
+
+==== udev Regel zur Bezeichnungs der Schnittstellen ====
+Mit dieser Regel ändern wir die Bezeichnung der Karten in der von uns festgelegten Form bei jedem Start des Raspberry Pi bzw. immer dann wenn die USB-Sticks verbunden werden.
+
+sudo vi /etc/udev/rules.d/10-wlan.rules 
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:c0:ca:a5:AA:BB", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="wlan*", NAME="wlan1"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="00:c0:ca:a5:CC:DD", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="wlan*", NAME="wlan2"
+</code>
+
+==== DHCP auf den Interfaces wlan1 & wlan2 deaktivieren ====
+sudo vi /etc/dhcpcd.conf 
+
+denyinterfaces wlan1 wlan2
+
+==== Die wlan1 & wlan2 Schnittstellen auf 80 MHz breite Kanäle einstellen ====
+Nehmen wir mal an dass Kanal 100 und 112 in 80 MHz mitgeschnitten werden sollen...
+airmon-ng bietet uns an Prozesse aus dem Weg zu räumen die uns bei der Aufzeichnung stören könnten, daher machen wir das bevor wir die Schnittstellen zu Monitor-Interfaces machen.
+
+<code>
+pi@raspberrypi:~ $ sudo airmon-ng check
+
+Found 4 processes that could cause trouble.
+If airodump-ng, aireplay-ng or airtun-ng stops working after
+a short period of time, you may want to run 'airmon-ng check kill'
+
+  PID Name
+  319 avahi-daemon
+  348 avahi-daemon
+  401 wpa_supplicant
+  516 dhcpcd
+
+pi@raspberrypi:~ $ sudo airmon-ng check kill
+
+Killing these processes:
+
+  PID Name
+  401 wpa_supplicant
+  516 dhcpcd
+
+pi@raspberrypi:~ $ sudo airmon-ng check
+
+pi@raspberrypi:~ $ sudo iw dev wlan1 set type monitor
+pi@raspberrypi:~ $ sudo iw dev wlan2 set type monitor 
+
+pi@raspberrypi:~ $ sudo ip link set wlan1 up
+pi@raspberrypi:~ $ sudo ip link set wlan2 up
+
+pi@raspberrypi:~ $ sudo iw wlan1 set freq 5500 80 5530
+pi@raspberrypi:~ $ sudo iw wlan2 set freq 5560 80 5550
+
+pi@raspberrypi:~ $ sudo iw wlan1 info
+Interface wlan1
+	ifindex 4
+	wdev 0x100000001
+	addr 00:c0:ca:a5:77:83
+	type monitor
+	wiphy 1
+	channel 100 (5500 MHz), width: 80 MHz, center1: 5470 MHz
+	txpower 18.00 dBm
+pi@raspberrypi:~ $ sudo iw wlan2 info
+Interface wlan2
+	ifindex 5
+	wdev 0x200000001
+	addr 00:c0:ca:a5:79:12
+	type monitor
+	wiphy 2
+	channel 112 (5560 MHz), width: 80 MHz, center1: 5530 MHz
+	txpower 18.00 dBm
+</code>
+
+==== Optional: Eigenes "iw" bauen ====
+Im obigen Fenster ist es vielleicht aufgefallen, dass die Wahl der Kanäle nun nicht unbedingt selbsterklärend war. Zum Glück wird das Werkzeug "iw" weiterhin gut gepflegt und im nächsten Debian (und voraussichtlich auch Raspbian) wird dann die aktualisierte Variante in Version 4.14 dabei sein. Bis dahin kann man sich dies natürlich selbst bauen, wie dies geht zeige ich hier. :)
+
+<code>
+pi@raspberrypi:~ $ iw --version
+iw version 4.9
+pi@raspberrypi:~ $ wget https://git.kernel.org/pub/scm/linux/kernel/git/jberg/iw.git/snapshot/iw-4.14.tar.gz
+--2018-11-10 15:43:31--  https://git.kernel.org/pub/scm/linux/kernel/git/jberg/iw.git/snapshot/iw-4.14.tar.gz
+Resolving git.kernel.org (git.kernel.org)... 2604:1380:4090:1700::1, 147.75.44.153
+Connecting to git.kernel.org (git.kernel.org)|2604:1380:4090:1700::1|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [application/x-gzip]
+Saving to: ‘iw-4.14.tar.gz’
+
+iw-4.14.tar.gz                         [ <=>                                                           ] 141.60K  --.-KB/s    in 0.09s   
+
+2018-11-10 15:43:46 (1.51 MB/s) - ‘iw-4.14.tar.gz’ saved [144999]
+
+pi@raspberrypi:~ $ 
+pi@raspberrypi:~ $ 
+pi@raspberrypi:~ $ ls
+iw-4.14.tar.gz  rtl8812au
+pi@raspberrypi:~ $ file iw-4.14.tar.gz 
+iw-4.14.tar.gz: gzip compressed data, from Unix
+pi@raspberrypi:~ $ 
+pi@raspberrypi:~ $ 
+pi@raspberrypi:~ $ tar xzvf iw-4.14.tar.gz 
+iw-4.14/
+iw-4.14/.gitignore
+iw-4.14/Android.mk
+iw-4.14/CONTRIBUTING
+iw-4.14/COPYING
+iw-4.14/Makefile
+iw-4.14/README
+iw-4.14/ap.c
+iw-4.14/bitrate.c
+iw-4.14/coalesce.c
+iw-4.14/connect.c
+iw-4.14/cqm.c
+iw-4.14/event.c
+iw-4.14/genl.c
+iw-4.14/hwsim.c
+iw-4.14/ibss.c
+iw-4.14/ieee80211.h
+iw-4.14/info.c
+iw-4.14/interface.c
+iw-4.14/iw.8
+iw-4.14/iw.c
+iw-4.14/iw.h
+iw-4.14/link.c
+iw-4.14/mesh.c
+iw-4.14/mgmt.c
+iw-4.14/mpath.c
+iw-4.14/mpp.c
+iw-4.14/nl80211.h
+iw-4.14/ocb.c
+iw-4.14/offch.c
+iw-4.14/p2p.c
+iw-4.14/phy.c
+iw-4.14/ps.c
+iw-4.14/reason.c
+iw-4.14/reg.c
+iw-4.14/roc.c
+iw-4.14/scan.c
+iw-4.14/sections.c
+iw-4.14/station.c
+iw-4.14/status.c
+iw-4.14/survey.c
+iw-4.14/util.c
+iw-4.14/vendor.c
+iw-4.14/version.sh
+iw-4.14/wowlan.c
+pi@raspberrypi:~ $ cd iw-4.14/
+pi@raspberrypi:~/iw-4.14 $ ls
+Android.mk  connect.c     event.c  ieee80211.h  iw.c      mesh.c   nl80211.h  phy.c     reg.c       station.c  vendor.c
+ap.c        CONTRIBUTING  genl.c   info.c       iw.h      mgmt.c   ocb.c      ps.c      roc.c       status.c   version.sh
+bitrate.c   COPYING       hwsim.c  interface.c  link.c    mpath.c  offch.c    README    scan.c      survey.c   wowlan.c
+coalesce.c  cqm.c         ibss.c   iw.8         Makefile  mpp.c    p2p.c      reason.c  sections.c  util.c
+
+(Damit iw-4.14 erfolgreich baut, brauchen wir libnl1 bzw. auch -dev.)
+
+pi@raspberrypi:~/iw-4.14 $ sudo apt-get install libnl-dev
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following additional packages will be installed:
+  libnl1
+Suggested packages:
+  libnl-doc
+The following NEW packages will be installed:
+  libnl-dev libnl1
+0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+Need to get 156 kB of archives.
+After this operation, 409 kB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+Get:1 http://mirror.de.leaseweb.net/raspbian/raspbian stretch/main armhf libnl1 armhf 1.1-8 [122 kB]
+Get:2 http://ftp.halifax.rwth-aachen.de/raspbian/raspbian stretch/main armhf libnl-dev armhf 1.1-8 [33.8 kB]
+Fetched 156 kB in 0s (254 kB/s)                                        
+Selecting previously unselected package libnl1:armhf.
+(Reading database ... 69642 files and directories currently installed.)
+Preparing to unpack .../libnl1_1.1-8_armhf.deb ...
+Unpacking libnl1:armhf (1.1-8) ...
+Selecting previously unselected package libnl-dev.
+Preparing to unpack .../libnl-dev_1.1-8_armhf.deb ...
+Unpacking libnl-dev (1.1-8) ...
+Setting up libnl1:armhf (1.1-8) ...
+Setting up libnl-dev (1.1-8) ...
+
+pi@raspberrypi:~/iw-4.14 $ make
+ CC   iw.o
+ CC   genl.o
+ CC   event.o
+ CC   info.o
+ CC   phy.o
+ CC   interface.o
+ CC   ibss.o
+ CC   station.o
+ CC   survey.o
+ CC   util.o
+ CC   ocb.o
+ CC   mesh.o
+ CC   mpath.o
+ CC   mpp.o
+ CC   scan.o
+ CC   reg.o
+ GEN  version.c
+ CC   version.o
+ CC   reason.o
+ CC   status.o
+ CC   connect.o
+ CC   link.o
+ CC   offch.o
+ CC   ps.o
+ CC   cqm.o
+ CC   bitrate.o
+ CC   wowlan.o
+ CC   coalesce.o
+ CC   roc.o
+ CC   p2p.o
+ CC   vendor.o
+ CC   mgmt.o
+ CC   ap.o
+ CC   sections.o
+ CC   iw
+
+Es ist nun wirklich einfach die Kanäle zu setzen.
+
+pi@raspberrypi:~/iw-4.14 $ sudo ./iw wlan1 set channel 52 80MHz
+pi@raspberrypi:~/iw-4.14 $ sudo ./iw wlan2 set channel 100 80MHz
+
+pi@raspberrypi:~/iw-4.14 $ ./iw wlan1 info
+Interface wlan1
+	ifindex 4
+	wdev 0x100000001
+	addr 00:c0:ca:a5:77:83
+	type monitor
+	wiphy 1
+	channel 52 (5260 MHz), width: 80 MHz, center1: 5230 MHz
+	txpower 18.00 dBm
+
+pi@raspberrypi:~/iw-4.14 $ ./iw wlan2 info
+Interface wlan2
+	ifindex 5
+	wdev 0x200000001
+	addr 00:c0:ca:a5:79:12
+	type monitor
+	wiphy 2
+	channel 100 (5500 MHz), width: 80 MHz, center1: 5470 MHz
+	txpower 18.00 dBm
+</code>
+
+==== Wireshark installieren ====
+Mit der Installation von Wireshark ist der Raspberry Pi wieder einen Moment beschäftigt. Die Frage ob Benutzer in der Lage sein sollen die Daten mitzuschneiden, sollte mit "Ja" beantwortet werden. Nach Abschluss der Installation muss der Benutzer **pi** noch in die Gruppe wireshark aufgenommen werden. Danach sollte man sich einmal abmelden und wieder anmelden, um diese Änderung wirksam zu machen.
+
+<code>
+pi@raspberrypi:~ $ sudo apt-get install wireshark
+(dies dauert erstmal wieder)
+
+pi@raspberrypi:~ $ sudo adduser pi wireshark
+Adding user `pi' to group `wireshark' ...
+Adding user pi to group wireshark
+Done.
+</code>
+
+==== Zugriff aus der Ferne (z.B. von einem Laptop) ====
+Mein Plan von meinem Firmen Laptop per MobaXterm über SSH mit X-Forwarding auf Wireshark zuzugreifen wurde von ziemlichen Verzögerungen geplagt. Daher nun ein Versuch mit VNC ...
+
+<code>
+pi@raspberrypi:~ $ sudo apt-get install tightvncserver fluxbox xterm
+(Das dauert jetzt wieder etwas)
+
+Erstmal ein VNC-Passwort festlegen (maximal acht Zeichen, nichts wertvolles)
+pi@raspberrypi:~ $ vncpasswd
+Using password file /home/pi/.vnc/passwd
+Password: 
+Verify:   
+Would you like to enter a view-only password (y/n)? n
+
+pi@raspberrypi:~ $ vi .vnc/xstartup 
+(Dort in die letzte Zeile folgendes eintragen)
+fluxbox &
+
+pi@raspberrypi:~/.vnc $ vncserver
+
+</code>
+
+Bessere Alternative könnte wohl sein RealVNC zu verwenden. Das wird direkt über "sudo raspi-config" aktiviert.
+<code>
+sudo systemctl enable vncserver-virtuald.service
+sudo systemctl enable vncserver-x11-serviced.service
+</code>
+
+<WRAP center round tip 60%>
+Bis hier bin ich bisher gekommen, wirklich hübsch sieht dieser Wireshark jetzt noch nicht aus - aber ein Anfang :)
+</WRAP>
+
+
+
+===== Erfahrungen mit anderen Wireless-Adaptern =====
+
+==== Erfahrungen/Ergebnis mit Broadcom BCM43455 (onboard Raspberry Pi 3 B+) ====
+Mit "nexmon" Firmware-Patch funktioniert der "monitor mode", allerdings sind keine DATA Pakete sichtbar sondern nur Beacons und Multicast. (Es ist möglich dass zukünftige Korrekturen/Erweiterungen die Funktion doch noch nachrüsten.)
+
+Status: Wer mit dem Pi 3 B+ nur Beacons mitschneiden will, ist hiermit schon gut aufgehoben - aber für erweiterte Analyse ist es mir bisher nicht gut genug.
+
+==== Erfahrungen/Ergebnis mit TP-Link Archer T2UH (v1/v2) ====
+Ein schreckliches Stück Hardwaregeschichte das es nicht wert ist gekauft zu werden. Die Treiberunterstützung vom Hersteller ist traurig schlecht. In 2018 offiziell einen Treiber bis Kernel v3.16 anzubieten ist schon wirklich dreist (und sich dafür mit Linux-Unterstützung zu rühmen).
+Es gibt modifizierte Treiber z.B. im GitHub Repository von [[https://github.com/ulli-kroll/mt7610u|Ulli Kroll]], die zumindest auf v4.14 kompilieren, aber auch nicht für den "monitor mode" funktionieren. Der Versuch den Stick mit airmon-ng zu initialisieren führt dazu dass sich der Kernel weghängt. Sowohl HW v1.0 als auch v2.0 funktionieren nicht für den Monitor Mode (habe beide Varianten getestet).
+
+Status: m(
+
+===== Anleitung: Broadcom BCM43455 (onboard Raspberry Pi 3 B+) für Wireless Monitor Mode vorbereiten =====
+
+<WRAP center round important 60%>
+Dieser Vorgang (Änderung der Firmware) kann den Raspberry Pi irreperabel beschädigen!
+</WRAP>
+
+<code>
+pi@raspberrypi:~ $ sudo su
+root@raspberrypi:/home/pi# sudo apt-get install raspberrypi-kernel-headers git libgmp3-dev gawk qpdf bison flex make
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+make is already the newest version (4.1-9.1).
+make set to manually installed.
+The following additional packages will be installed:
+  git-man libbison-dev liberror-perl libfl-dev libgmp-dev libgmpxx4ldbl libqpdf17 libsigsegv2 m4
+Suggested packages:
+  bison-doc gawk-doc git-daemon-run | git-daemon-sysvinit git-doc git-el git-email git-gui gitk gitweb git-arch
+  git-cvs git-mediawiki git-svn gmp-doc libgmp10-doc libmpfr-dev m4-doc
+The following NEW packages will be installed:
+  bison flex gawk git git-man libbison-dev liberror-perl libfl-dev libgmp-dev libgmp3-dev libgmpxx4ldbl libqpdf17
+  libsigsegv2 m4 qpdf raspberrypi-kernel-headers
+0 upgraded, 16 newly installed, 0 to remove and 0 not upgraded.
+Need to get 24.5 MB of archives.
+After this operation, 140 MB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+
+-> Y
+</code>
+
+==== Werkzeug zur Modifikation der Firmware vorbereiten ====
+
+<code>
+root@raspberrypi:/home/pi# git clone https://github.com/seemoo-lab/nexmon.git
+Cloning into 'nexmon'...
+remote: Enumerating objects: 33085, done.
+remote: Total 33085 (delta 0), reused 0 (delta 0), pack-reused 33085
+Receiving objects: 100% (33085/33085), 355.78 MiB | 6.05 MiB/s, done.
+Resolving deltas: 100% (14894/14894), done.
+Checking out files: 100% (33209/33209), done.
+root@raspberrypi:/home/pi# cd nexmon/
+root@raspberrypi:/home/pi/nexmon# cd buildtools/isl-0.10/
+root@raspberrypi:/home/pi/nexmon/buildtools/isl-0.10# ./configure
+(warten)
+root@raspberrypi:/home/pi/nexmon/buildtools/isl-0.10# make
+(warten)
+root@raspberrypi:/home/pi/nexmon/buildtools/isl-0.10# make install
+(warten)
+root@raspberrypi:/home/pi/nexmon/buildtools/isl-0.10# ln -s /usr/local/lib/libisl.so /usr/lib/arm-linux-gnueabihf/libisl.so.10
+
+root@raspberrypi:/home/pi/nexmon/buildtools/isl-0.10# cd ..
+root@raspberrypi:/home/pi/nexmon/buildtools# cd ..
+
+root@raspberrypi:/home/pi/nexmon# source setup_env.sh
+root@raspberrypi:/home/pi/nexmon# make
+(warten)
+
+</code>
+
+Der Raspberry Pi 3 B+ verwendet den BCM43455 für Wireless.
+
+<code>
+root@raspberrypi:/home/pi/nexmon# cd patches/bcm43455c0/7_45_154/nexmon/
+
+root@raspberrypi:/home/pi/nexmon/patches/bcm43455c0/7_45_154/nexmon# make
+
+
+          ###########   ###########   ##########    ##########           
+         ############  ############  ############  ############          
+         ##            ##            ##   ##   ##  ##        ##          
+         ##            ##            ##   ##   ##  ##        ##          
+         ###########   ####  ######  ##   ##   ##  ##    ######          
+          ###########  ####  #       ##   ##   ##  ##    #    #          
+                   ##  ##    ######  ##   ##   ##  ##    #    #          
+                   ##  ##    #       ##   ##   ##  ##    #    #          
+         ############  ##### ######  ##   ##   ##  ##### ######          
+         ###########    ###########  ##   ##   ##   ##########           
+
+            S E C U R E   M O B I L E   N E T W O R K I N G               
+
+
+                               presents:                                  
+
+              # ###   ###  #   # # ###  ###   ###  # ###                  
+              ##   # #   #  # #  ##   ##   # #   # ##   #                 
+              #    # #####   #   #    #    # #   # #    #                 
+              #    # #      # #  #    #    # #   # #    #                 
+              #    #  #### #   # #    #    #  ###  #    #                 
+
+                The C-based Firmware Patching Framework                   
+
+
+                           !!! WARNING !!!                                
+    Our software may damage your hardware and may void your hardware’s    
+     warranty! You use our tools at your own risk and responsibility      
+
+
+  COLLECTING STATISTICS read /home/pi/nexmon/STATISTICS.md for more information
+  COMPILING src/injection.c => obj/injection.o (details: log/compiler.log)
+  COMPILING src/patch.c => obj/patch.o (details: log/compiler.log)
+  COMPILING src/console.c => obj/console.o (details: log/compiler.log)
+  COMPILING src/version.c => obj/version.o (details: log/compiler.log)
+  COMPILING src/sendframe.c => obj/sendframe.o (details: log/compiler.log)
+  COMPILING src/monitormode.c => obj/monitormode.o (details: log/compiler.log)
+  COPYING UCODE /home/pi/nexmon/firmwares/bcm43455c0/7_45_154/ucode.bin => gen/ucode.bin
+  COMPRESSING UCODE gen/ucode.bin => gen/ucode_compressed.bin
+  GENERATING C FILE gen/ucode_compressed.bin => src/ucode_compressed.c
+  COMPILING src/ucode_compressed.c => obj/ucode_compressed.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/wrapper.c => obj/wrapper.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/argprintf.c => obj/argprintf.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/helper.c => obj/helper.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/udptunnel.c => obj/udptunnel.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/ucode_compression_code.c => obj/ucode_compression_code.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/objmem.c => obj/objmem.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/securitycookie.c => obj/securitycookie.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/patches/common/radiotap.c => obj/radiotap.o (details: log/compiler.log)
+  COMPILING /home/pi/nexmon/firmwares/bcm43455c0/7_45_154/flashpatches.c => obj/flashpatches.o (details: log/compiler.log)
+  GENERATING LINKER FILE gen/nexmon.pre => gen/nexmon.ld
+  GENERATING LINKER FILE gen/nexmon.pre => gen/flashpatches.ld
+  GENERATING LINKER FILE gen/memory.ld
+  LINKING OBJECTS => gen/patch.elf (details: log/linker.log, log/linker.err)
+  GENERATING MAKE FILE gen/nexmon.pre => gen/nexmon.mk
+  GENERATING MAKE FILE gen/nexmon.pre => gen/flashpatches.mk
+  APPLYING FLASHPATCHES gen/flashpatches.mk => brcmfmac43455-sdio.bin (details: log/flashpatches.log)
+  APPLYING PATCHES gen/nexmon.mk => brcmfmac43455-sdio.bin (details: log/patches.log)
+  BUILDING DRIVER for kernel 4.14 brcmfmac_4.14.y-nexmon/brcmfmac.ko (details: log/driver.log)
+
+root@raspberrypi:/home/pi/nexmon/patches/bcm43455c0/7_45_154/nexmon# make backup-firmware
+cp /lib/firmware/brcm/brcmfmac43455-sdio.bin brcmfmac43455-sdio.bin.orig
+root@raspberrypi:/home/pi/nexmon/patches/bcm43455c0/7_45_154/nexmon# make install-firmware
+
+
+          ###########   ###########   ##########    ##########           
+         ############  ############  ############  ############          
+         ##            ##            ##   ##   ##  ##        ##          
+         ##            ##            ##   ##   ##  ##        ##          
+         ###########   ####  ######  ##   ##   ##  ##    ######          
+          ###########  ####  #       ##   ##   ##  ##    #    #          
+                   ##  ##    ######  ##   ##   ##  ##    #    #          
+                   ##  ##    #       ##   ##   ##  ##    #    #          
+         ############  ##### ######  ##   ##   ##  ##### ######          
+         ###########    ###########  ##   ##   ##   ##########           
+
+            S E C U R E   M O B I L E   N E T W O R K I N G               
+
+
+                               presents:                                  
+
+              # ###   ###  #   # # ###  ###   ###  # ###                  
+              ##   # #   #  # #  ##   ##   # #   # ##   #                 
+              #    # #####   #   #    #    # #   # #    #                 
+              #    # #      # #  #    #    # #   # #    #                 
+              #    #  #### #   # #    #    #  ###  #    #                 
+
+                The C-based Firmware Patching Framework                   
+
+
+                           !!! WARNING !!!                                
+    Our software may damage your hardware and may void your hardware’s    
+     warranty! You use our tools at your own risk and responsibility      
+
+
+  COLLECTING STATISTICS read /home/pi/nexmon/STATISTICS.md for more information
+  COMPILING src/version.c => obj/version.o (details: log/compiler.log)
+  GENERATING LINKER FILE gen/nexmon.pre => gen/nexmon.ld
+  GENERATING LINKER FILE gen/nexmon.pre => gen/flashpatches.ld
+  LINKING OBJECTS => gen/patch.elf (details: log/linker.log, log/linker.err)
+  GENERATING MAKE FILE gen/nexmon.pre => gen/nexmon.mk
+  GENERATING MAKE FILE gen/nexmon.pre => gen/flashpatches.mk
+  APPLYING FLASHPATCHES gen/flashpatches.mk => brcmfmac43455-sdio.bin (details: log/flashpatches.log)
+  APPLYING PATCHES gen/nexmon.mk => brcmfmac43455-sdio.bin (details: log/patches.log)
+  BUILDING DRIVER for kernel 4.14 brcmfmac_4.14.y-nexmon/brcmfmac.ko (details: log/driver.log)
+  COPYING brcmfmac43455-sdio.bin => /lib/firmware/brcm/brcmfmac43455-sdio.bin
+  UNLOADING brcmfmac
+  RELOADING brcmfmac
+
+root@raspberrypi:/home/pi/nexmon/patches/bcm43455c0/7_45_154/nexmon# cd ..
+root@raspberrypi:/home/pi/nexmon/patches/bcm43455c0/7_45_154# cd ..
+root@raspberrypi:/home/pi/nexmon/patches/bcm43455c0# cd ..
+root@raspberrypi:/home/pi/nexmon/patches# cd ..
+
+Neuen Treiber bootfest machen:
+sudo cp nexmon/patches/bcm43455c0/7_45_154/nexmon/brcmfmac_4.14.y-nexmon/brcmfmac.ko /lib/modules/4.14.71-v7+/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko
+sudo depmod -a
+sudo reboot now
+
+==== Pakete mitschneiden ====
+sudo ip link set dev wlan0 down
+sudo iw phy `iw dev wlan0 info | gawk '/wiphy/ {printf "phy" $2}'` interface add mon0 type monitor
+sudo ip link set dev mon0 up
+sudo iwconfig mon0 channel X
+sudo tcpdump -i mon0
+sudo tcpdump -vvvi mon0
+
+
+==== Irritationen mit dem Country Code ====
+sudo iw reg get
+sudo iw reg set DE
+
+
+==== Weitere relevante Kommandos/Ausgaben für WLAN ====
+sudo iw dev
+sudo iw phy0 info
