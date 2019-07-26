@@ -1,3 +1,6 @@
-sudo mon0 up
-airodump-ng mon0
-aireplay-ng --test mon0
+# sudo mon0 up
+# airodump-ng mon0
+# aireplay-ng --test mon0
+nexutil -m0
+iw phy0 `iw dev wlan0 info | gawk '/wiphy/ {printf "phy0" $2}'` interface add mon0 type monitor;
+sudo ifconfig mon0 up;
