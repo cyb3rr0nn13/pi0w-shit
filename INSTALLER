@@ -53,3 +53,7 @@ cd /usr/share && sudo mkdir jdownloader && cd jdownloader && sudo wget http://in
 
 # ALOA
 wget https://github.com/mame82/P4wnP1_aloa/releases/download/v0.1.0-alpha2/kali-linux-v0.1.0-alpha2-rpi0w-nexmon-p4wnp1-aloa.img.xz
+
+# EternalBlue-Scanner
+sudo git clone https://github.com/nsa/eternalblue-scanner /usr/share/eternalblue-scanner && cd /usr/share/eternalblue-scanner && sudo chmod 755 eternalbash && sudo bash eternalbash
+
