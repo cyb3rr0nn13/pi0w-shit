@@ -1,3 +1,28 @@
+# KALI-STUFF
+
+# re4son Kernel
+cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh -x && sudo rm -rf /usr/local/src/*.tar.xz
+# Bluetooth: # Remove: cd /usr/local/src/re4son-kernel_4* && ./install.sh -r # Re-install: ./install.sh -b
+
+# KaliPi-Config
+sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.com/Re4son/RPi-Tweaks/master/kalipi-config/kalipi-config /usr/sbin && sudo chmod +x -R /usr/sbin/kalipi-config && sudo kalipi-config
+
+# ALOA
+wget https://github.com/mame82/P4wnP1_aloa/releases/download/v0.1.0-alpha2/kali-linux-v0.1.0-alpha2-rpi0w-nexmon-p4wnp1-aloa.img.xz
+
+
+
+# APPS
+
+# Hostapd-Mana
+wget -qO- https://raw.githubusercontent.com/adde88/hostapd-mana/master/INSTALL.sh | bash -s -- -v -v
+
+# PMKID Attack
+opkg update && opkg --dest sd install git git-http && cd /sd/modules && git clone https://github.com/n3d-b0y/PMKIDAttack.git PMKIDAttack && chmod +x -R /sd/modules/PMKIDAttack/scripts
+
+# Pass the Hash
+sudo apt-get install passing-the-hash unicornscan nfspy firmware-mod-kit wmis enum4linux polenum unicornscan winexe nipper-ng jsql oclgausscrack ghost-phisher uniscan lbd automater arachni bully inguma sslsplit dumpzilla owasp-mantra-ff recon-ng ridenum regripper jd-gui
+
 # LScript
 sudo git clone https://github.com/arismelachroinos/lscript /usr/share/lscript/ && sudo chmod +x /usr/share/lscript/* && sudo bash /usr/share/lscript/install.sh
 
@@ -22,24 +47,8 @@ sudo git clone https://github.com/empireproject/empire /usr/share/empire && sudo
 # mdk4
 sudo apt-get install pkg-config libnl-3-dev libnl-genl-3-dev libpcap-dev && sudo git clone https://github.com/aircrack-ng/mdk4 /usr/share/mdk4 && cd /usr/share/mdk4 && sudo make && sudo make install
 
-# re4son Kernel
-cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh -x && sudo rm -rf /usr/local/src/*.tar.xz
-# Bluetooth: # Remove: cd /usr/local/src/re4son-kernel_4* && ./install.sh -r # Re-install: ./install.sh -b
-
-# KaliPi-Config
-sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.com/Re4son/RPi-Tweaks/master/kalipi-config/kalipi-config /usr/sbin && sudo chmod +x -R /usr/sbin/kalipi-config && sudo kalipi-config
-
 # hcx*
 sudo git clone --recursive https://github.com/ZerBea/hcxdumptool /usr/share/hcxdumptool && cd /usr/share/hcxdumptool && sudo make && sudo make install && sudo git clone --recursive https://github.com/ZerBea/hcxtools /usr/share/hcxtools && cd /usr/share/hcxtools && sudo make && sudo make install
-
-# Hostapd-Mana
-wget -qO- https://raw.githubusercontent.com/adde88/hostapd-mana/master/INSTALL.sh | bash -s -- -v -v
-
-# PMKID Attack
-opkg update && opkg --dest sd install git git-http && cd /sd/modules && git clone https://github.com/n3d-b0y/PMKIDAttack.git PMKIDAttack && chmod +x -R /sd/modules/PMKIDAttack/scripts
-
-# Pass the Hash
-sudo apt-get install passing-the-hash unicornscan nfspy firmware-mod-kit wmis enum4linux polenum unicornscan winexe nipper-ng jsql oclgausscrack ghost-phisher uniscan lbd automater arachni bully inguma sslsplit dumpzilla owasp-mantra-ff recon-ng ridenum regripper jd-gui
 
 # Ngrok
 sudo mkdir /usr/share/ngrok && sudo wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip /usr/share/ngrok && sudo chmod +x /usr/share/ngrok/* && sudo unzip /usr/share/ngrok/ngrok-stable-linux-arm.zip && sudo rm -rf /usr/share/ngrok/ngrok-stable-linux-arm.zip && sudo chmod +x /usr/share/ngrok/ngrok && sudo cp /usr/share/ngrok/ngrok /usr/sbin && cd /usr/share/ngrok/
@@ -50,9 +59,6 @@ sudo git clone https://github.com/UndeadSec/SocialFish /usr/share/socialfish && 
 
 # jDownloader2
 cd /usr/share && sudo mkdir jdownloader && cd jdownloader && sudo wget http://installer.jdownloader.org/JDownloader.jar && sudo java -jar JDownloader.jar
-
-# ALOA
-wget https://github.com/mame82/P4wnP1_aloa/releases/download/v0.1.0-alpha2/kali-linux-v0.1.0-alpha2-rpi0w-nexmon-p4wnp1-aloa.img.xz
 
 # EternalBlue-Scanner
 sudo git clone https://github.com/nsa/eternalblue-scanner /usr/share/eternalblue-scanner && cd /usr/share/eternalblue-scanner && sudo chmod 755 eternalbash && sudo bash eternalbash
