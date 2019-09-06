@@ -57,3 +57,5 @@ wget https://github.com/mame82/P4wnP1_aloa/releases/download/v0.1.0-alpha2/kali-
 # EternalBlue-Scanner
 sudo git clone https://github.com/nsa/eternalblue-scanner /usr/share/eternalblue-scanner && cd /usr/share/eternalblue-scanner && sudo chmod 755 eternalbash && sudo bash eternalbash
 
+# Blueborne
+sudo apt-get update && sudo apt-get install python2.7 python-pip python-dev git libssl-dev libffi-dev build-essential && sudo apt-get install bluetooth libbluetooth-dev && sudo pip install pybluez pwntools && pip install --upgrade pip && sudo mkdir /usr/share/blueborne && sudo git clone --recursive https://github.com/mailinneberg/blueborne /usr/share/blueborne
