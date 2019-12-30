@@ -3,8 +3,20 @@ cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-ke
 # Remove BT:     cd /usr/local/src/re4son-kernel_4* && sudo ./install.sh -r 
 # Re-install BT: cd /usr/local/src/re4son-kernel_4* && sudo ./install.sh -b
 
+# IMG to SD
+sudo dd bs=4M if=*.img of=/dev/sd* conv=fsync status=progress
+
+# IMG.XZ to SD
+xzcat *.img.xz | sudo dd bs=4M of=/dev/sd* conv=fsync status=progress
+
+# ZIP to SD
+unzip -p *.zip | sudo dd of=/dev/sd* bs=4M conv=fsync
+
 # Openvas
 wget https://raw.githubusercontent.com/rootorben/0penvas/master/setup.sh && chmod 755 setup.sh && sudo ./setup.sh
+
+# Pi0 MSFdb
+sudo systemctl daemon reload && sudo pg_ctlcluster 12 main start
 
 # KaliPi-Config
 sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.com/Re4son/RPi-Tweaks/master/kalipi-config/kalipi-config /usr/sbin && sudo chmod +x -R /usr/sbin/kalipi-config && sudo kalipi-config
