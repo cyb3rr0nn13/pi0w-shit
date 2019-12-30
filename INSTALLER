@@ -15,8 +15,11 @@ unzip -p *.zip | sudo dd of=/dev/sd* bs=4M conv=fsync
 # Openvas
 wget https://raw.githubusercontent.com/rootorben/0penvas/master/setup.sh && chmod 755 setup.sh && sudo ./setup.sh
 
-# Pi0 MSFdb
-sudo systemctl daemon reload && sudo pg_ctlcluster 12 main start
+# Pi0 MSFdb 
+sudo systemctl daemon-reload && sudo pg_ctlcluster 12 main start
+
+# Pi4 MSFdb
+sudo service /etc/init.d/postgresql start && sudo msfdb init
 
 # KaliPi-Config
 sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.com/Re4son/RPi-Tweaks/master/kalipi-config/kalipi-config /usr/sbin && sudo chmod +x -R /usr/sbin/kalipi-config && sudo kalipi-config
