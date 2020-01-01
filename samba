@@ -1,3 +1,4 @@
+sudo apt-get install samba smbc smbclient;
 sudo nano /etc/samba/smb.conf;
 
 [global]
@@ -8,6 +9,13 @@ client min protocol = SMB2
 client max protocol = SMB3
 winssupport = yes                                                                                             
 unix password sync = yes
+
+
+
+[User]
+comment = ***
+path = /home/smb/***
+read only = no
 
 sudo mkdir -p /home/smb/test && sudo chown root:root /home/smb/test && sudo chmod 777 /home/smb/test/;
 sudo mkdir -p /home/smb/users && sudo chown root:users /home/smb/users/ && sudo chmod 770 /home/smb/users/;
