@@ -26,5 +26,9 @@ sudo nano /etc/fstab
 //192.168.178.27/users    /home/***/smb/users    cifs    defaults,noauto,nofail,username=***,passwd=***    0    0
 //192.168.178.27/***    /home/***/smb/***    cifs    defaults,noauto,nofail,username=***,passwd=***    0    0
 
+sudo smbpasswd -a ***
+sudo smbpasswd -d ***
+sudo smbpasswd -e ***
+
 sudo service smbd restart;
 sudo service nmbd restart;
