@@ -1,6 +1,16 @@
 # PMKID Attack
 wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/pmkid-attack && chmod 755 pmkid-attack && ./pmkid-attack && rm -rf pmkid-attack
 
+# Pupy Python
+sudo apt-get install git libssl1.0-dev libffi-dev python-dev python-pip build-essential swig tcpdump python-virtualenv -y && git clone --recursive https://github.com/n1nj4sec/pupy;
+cd pupy && ./create-workspace.py pupyws;
+export PATH=$PATH:~/.local/bin; pupyws   
+# ~/pupy/pupyws/bin/pupysh
+
+# Pupy Docker
+git clone --recursive https://github.com/alxchk/pupy && cd pupy; 
+bash install.sh && bash start-compose.sh
+
 # Re4son Kernel
 cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh -x && sudo rm -rf /usr/local/src/*.tar.xz
 # Remove BT:     cd /usr/local/src/re4son-kernel_4* && sudo ./install.sh -r 
