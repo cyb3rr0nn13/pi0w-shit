@@ -1,5 +1,5 @@
 # PMKID Attack
-wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/pmkid-attack && chmod 755 pmkidattack && ./pmkid-attack && rm -rf pmkid-attack
+wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/pmkid-attack && chmod 755 pmkid-attack && ./pmkid-attack && rm -rf pmkid-attack
 
 # Re4son Kernel
 cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh -x && sudo rm -rf /usr/local/src/*.tar.xz
