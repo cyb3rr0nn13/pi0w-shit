@@ -1,3 +1,4 @@
+sudo apt-get install pyrit reaver mdk3 mdk4 pixiewps bully cowpatty tshark aircrack-ng;
 mkdir ~/.pmkid && cd pmkid;
 git clone https://github.com/zerbea/hcxdumptool;
 git clone https://github.com/zerbea/hcxtools;
