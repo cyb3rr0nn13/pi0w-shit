@@ -1,0 +1,35 @@
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get install build-essential tshark bc git dkms aircrack-ng tcpdump vim raspberrypi-kernel-headers libgmp3-dev gawk qpdf bison flex make bison-doc gawk-doc git-daemon sysvinit git-doc git-el git-email git-gui gitk gitweb git-cvs git-mediawiki git-svn gmp-doc libgmp10-doc libmpfr-dev m4-doc
+# sudo reboot now
+wget https://git.kernel.org/pub/scm/linux/kernel/git/jberg/iw.git/snapshot/iw-4.14.tar.gz
+tar xzvf iw-4.14.tar.gz
+cd iw-4.1.4*
+make
+sudo make install
+
+git clone --recursive https://github.com/seemoo-lab/nexmon
+cd nexmon/buildtools/isl-0.10/
+make
+sudo make install
+sudo ln -s /usr/local/lib/libisl.so /usr/lib/arm-linux-gnueabihf/libisl.so.10
+
+cd ~/nexmon
+source setup_env.sh
+make
+cd patches/bcm43430a1/7_45_41_26/nexmon
+make
+sudo make backup-firmware
+sudo cp /lib/firmware/brcm/brcmfmac43430a1-sdio.bin brcmfmac43455-sdio.bin.orig 
+sudo make install-firmware
+sudo cp ~/nexmon/patches/bcm43430a1/7_45_41_26/nexmon/brcmfmac_4.14.y-nexmon/brcmfmac.ko /lib/modules/4.14.71-v7+/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko
+sudo depmod -a
+sudo reboot now
+
+sudo ip link set dev wlan0 down
+sudo iw phy `iw dev wlan0 info | gawk '/wiphy/ {printf "phy" $2}'` interface add mon0 type monitor
+sudo ip link set dev mon0 up
+sudo iw reg get
+sudo iw reg set DE
+sudo iw dev
+sudo iw phy0 info
