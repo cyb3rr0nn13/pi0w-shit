@@ -1,9 +1,6 @@
 # PMKID Attack
 wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/pmkid-attack && chmod 755 pmkid-attack && ./pmkid-attack && rm -rf pmkid-attack
 
-# SiLENTTRiNiTY
-git clone https://github.com/byt3bl33d3r/SILENTTRINITY && cd SILENTTRINITY; pip3 install --user pipenv; pipenv install; pipenv shell && python st.py -h
-
 # RED TEAMING TOOLKIT
 wget https://raw.githubusercontent.com/rootorben/pi0w-shit/master/rtt && chmod 755 rtt && ./rtt
 
@@ -17,11 +14,6 @@ export PATH=$PATH:~/.local/bin; pupyws
 git clone --recursive https://github.com/alxchk/pupy && cd pupy; 
 bash install.sh && bash start-compose.sh
 
-# Re4son Kernel
-cd /usr/local/src && sudo wget -O re4son-kernel_current.tar.xz https://re4son-kernel.com/download/re4son-kernel-current/ && sudo tar -xJf re4son-kernel_current.tar.xz && cd re4son-kernel_4* && sudo ./install.sh -x && sudo rm -rf /usr/local/src/*.tar.xz
-# Remove BT:     cd /usr/local/src/re4son-kernel_4* && sudo ./install.sh -r 
-# Re-install BT: cd /usr/local/src/re4son-kernel_4* && sudo ./install.sh -b
-
 # Raspbian GUI
 sudo apt-get install raspberrypi-ui-mods -y
 
@@ -30,16 +22,11 @@ sudo apt-get install xrdp && sudo nano /etc/X11/Xwrapper.config
 # allowed_users=console >> allowed_users=anybody
 
 # Powershell on Pi
-sudo apt-get install libssl1.1 libssl1.0-dev libunwind8 && wget https://github.com/PowerShell/PowerShell/releases/download/v6.1.3/powershell-6.1.3-linux-arm32.tar.gz && mkdir ~/.powershell && tar -xvf ./powershell-6.1.3-linux-arm32.tar.gz -C ~/.powershell && ~/.powershell/pwsh
-
-# IMG to SD
-sudo dd bs=4M if=*.img of=/dev/sd* conv=fsync status=progress
-
-# IMG.XZ to SD
-xzcat *.img.xz | sudo dd bs=4M of=/dev/sd* conv=fsync status=progress
-
-# ZIP to SD
-unzip -p *.zip | sudo dd of=/dev/sd* bs=4M conv=fsync
+sudo apt-get install libssl1.1 libssl1.0-dev libunwind8
+wget https://github.com/PowerShell/PowerShell/releases/download/v6.1.3/powershell-6.1.3-linux-arm32.tar.gz
+mkdir ~/.powershell
+tar -xvf ./powershell-6.1.3-linux-arm32.tar.gz -C ~/.powershell
+~/.powershell/pwsh
 
 # Openvas
 wget https://raw.githubusercontent.com/rootorben/0penvas/master/setup.sh && chmod 755 setup.sh && sudo ./setup.sh
@@ -49,15 +36,6 @@ sudo systemctl daemon-reload && sudo pg_ctlcluster 12 main start
 
 # Pi4 MSFdb
 sudo service /etc/init.d/postgresql start && sudo msfdb init
-
-# KaliPi-Config
-sudo apt install lua5.1 alsa-utils && sudo wget https://raw.githubusercontent.com/Re4son/RPi-Tweaks/master/kalipi-config/kalipi-config /usr/sbin && sudo chmod +x -R /usr/sbin/kalipi-config && sudo kalipi-config
-
-# P4wnP1 AloA Installer
-wget https://github.com/mame82/P4wnP1_aloa/releases/download/v0.1.0-alpha2/kali-linux-v0.1.0-alpha2-rpi0w-nexmon-p4wnp1-aloa.img.xz && chmod 755 kali* && sudo fdisk /dev/sda && xzcat kali*.img.xz | sudo dd bs=4M of=/dev/sda conv=fsync status=progress
-
-# Katoolin
-sudo apt-get install dirmngr pgp gnupg2 && sudo git clone --recursive https://github.com/lionsec/katoolin /usr/share/katoolin && sudo chmod 755 /usr/share/katoolin/katoolin.py && cd /usr/share/katoolin && sudo python katoolin.py
 
 # Hostapd-Mana
 wget -qO- https://raw.githubusercontent.com/adde88/hostapd-mana/master/INSTALL.sh | bash -s -- -v -v
@@ -86,14 +64,8 @@ sudo git clone https://github.com/CroweCybersecurity/ps1encode /usr/share/ps1enc
 # AutoSploit
 sudo git clone https://github.com/NullArray/autosploit /usr/share/autosploit && cd /usr/share/autosploit && sudo  chmod +x -R install.sh && sudo ./install.sh
 
-# Empire
-sudo git clone https://github.com/empireproject/empire /usr/share/empire && sudo pip2 install -r /usr/share/empire/setup/requirements.txt && sudo /usr/share/empire/setup/install.sh && sudo python /usr/share/empire/setup/setup_databa* && sudo /usr/share/empire/setup/cert.sh && sudo /usr/share/empire/setup/reset.sh
-
 # mdk4
 sudo apt-get install pkg-config libnl-3-dev libnl-genl-3-dev libpcap-dev && sudo git clone https://github.com/aircrack-ng/mdk4 /usr/share/mdk4 && cd /usr/share/mdk4 && sudo make && sudo make install
-
-# hcx*
-sudo git clone --recursive https://github.com/ZerBea/hcxdumptool /usr/share/hcxdumptool && cd /usr/share/hcxdumptool && sudo make && sudo make install && sudo git clone --recursive https://github.com/ZerBea/hcxtools /usr/share/hcxtools && cd /usr/share/hcxtools && sudo make && sudo make install
 
 # Ngrok
 sudo mkdir /usr/share/ngrok && sudo wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip /usr/share/ngrok && sudo chmod +x /usr/share/ngrok/* && sudo unzip /usr/share/ngrok/ngrok-stable-linux-arm.zip && sudo rm -rf /usr/share/ngrok/ngrok-stable-linux-arm.zip && sudo chmod +x /usr/share/ngrok/ngrok && sudo cp /usr/share/ngrok/ngrok /usr/sbin && cd /usr/share/ngrok/
