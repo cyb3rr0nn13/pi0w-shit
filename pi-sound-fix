@@ -1,0 +1,6 @@
+sudo nano /etc/pulse/default.pa
+
+#Load-module module-udev-detect
+--->
+#load-module module-udev-detect tsched=0
+
