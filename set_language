@@ -1,0 +1,4 @@
+sudo locale-gen de_DE.UTF-8 
+sudo locale-gen de de_DE de_DE.UTF-8
+sudo dpkg-reconfigure locales
+export LC_ALL = "de_DE"
